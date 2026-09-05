@@ -165,6 +165,20 @@ async function orgLoadReports() {
   }
 }
 
+async function orgDownloadReportPdf() {
+  const slot = document.getElementById('reportSlot').value;
+  const url = slot ? `${API}/organizer-reports-pdf?slot=${slot}` : `${API}/organizer-reports-pdf`;
+  const res = await fetch(url, { headers: orgAuthHeaders() });
+  if (!res.ok) { alert('Could not generate the report'); return; }
+  const blob = await res.blob();
+  const objUrl = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = objUrl;
+  a.download = slot ? `quiz-report-quiz-${slot}.pdf` : 'quiz-report.pdf';
+  a.click();
+  URL.revokeObjectURL(objUrl);
+}
+
 async function orgDownloadCertificate(attemptId, username) {
   const res = await fetch(`${API}/organizer-certificate?attemptId=${attemptId}`, { headers: orgAuthHeaders() });
   if (!res.ok) { alert('Could not generate certificate'); return; }
