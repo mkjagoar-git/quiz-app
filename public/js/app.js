@@ -112,13 +112,13 @@ async function orgUploadQuestions(slot) {
 }
 
 async function orgUploadParticipants() {
-  const csvText = document.getElementById('participantsCsv').value;
+  const usernames = document.getElementById('participantUsernames').value;
   const defaultPassword = document.getElementById('defaultPassword').value;
   const resEl = document.getElementById('participantsResult');
   const res = await fetch(`${API}/organizer-participants-upload`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', ...orgAuthHeaders() },
-    body: JSON.stringify({ csvText, defaultPassword }),
+    body: JSON.stringify({ usernames, defaultPassword }),
   });
   const data = await res.json();
   if (!res.ok) { resEl.textContent = data.error || 'Upload failed'; return; }
