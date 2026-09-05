@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quiz Portal</title>
+<link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+<div class="wrap" id="app">
+
+  <section id="roleView">
+    <h1>Quiz Portal</h1>
+    <p class="lede">Sign in to set up a quiz, or to take one.</p>
+    <div class="role-links">
+      <a href="#" onclick="showView('orgLoginView'); return false;">Organizer</a>
+      <a href="#" onclick="showView('partLoginView'); return false;">Participant</a>
+    </div>
+  </section>
+
+  <!-- ===================== ORGANIZER ===================== -->
+
+  <section id="orgLoginView" style="display:none">
+    <h1>Organizer login</h1>
+    <div class="card">
+      <label for="orgUser">Username</label>
+      <input type="text" id="orgUser">
+      <label for="orgPass">Password</label>
+      <input type="password" id="orgPass">
+      <div id="orgLoginError" class="error"></div>
+      <button onclick="orgLogin()">Log in</button>
+      <button class="link" onclick="showView('roleView')">Back</button>
+    </div>
+  </section>
+
+  <section id="orgDashView" style="display:none">
+    <h1>Organizer dashboard</h1>
+    <p class="lede"><button class="link" onclick="orgLogout()">Log out</button></p>
+
+    <h2>Quiz slots</h2>
+    <div id="quizSlots"></div>
+
+    <h2>Participant accounts</h2>
+    <div class="card">
+      <p class="lede">Paste a CSV with a single <code>username</code> column, and choose the password every new account in this batch will start with.</p>
+      <label for="defaultPassword">Default password for this batch</label>
+      <input type="text" id="defaultPassword" placeholder="e.g. Exam2026">
+      <label for="participantsCsv">Usernames CSV</label>
+      <textarea id="participantsCsv" placeholder="username&#10;100234&#10;100235"></textarea>
+      <button onclick="orgUploadParticipants()">Create accounts</button>
+      <div id="participantsResult" class="notice"></div>
+    </div>
+
+    <h2>Reset password / unlock retake</h2>
+    <div class="card">
+      <label for="resetUser">Participant username</label>
+      <input type="text" id="resetUser">
+      <label for="resetNewPw">New password (leave blank to skip resetting it)</label>
+      <input type="text" id="resetNewPw" placeholder="only filled in = password is changed">
+      <label for="retakeSlot">Unlock retake for slot (optional)</label>
+      <select id="retakeSlot">
+        <option value="">— none —</option>
+        <option value="1">QUIZ-1</option>
+        <option value="2">QUIZ-2</option>
+        <option value="3">QUIZ-3</option>
+      </select>
+      <button onclick="orgResetParticipant()">Apply</button>
+      <div id="resetResult" class="notice"></div>
+    </div>
+
+    <h2>Reports</h2>
+    <div class="card">
+      <label for="reportSlot">Filter by quiz</label>
+      <select id="reportSlot" onchange="orgLoadReports()">
+        <option value="">All quizzes</option>
+        <option value="1">QUIZ-1</option>
+        <option value="2">QUIZ-2</option>
+        <option value="3">QUIZ-3</option>
+      </select>
+      <table id="reportsTable">
+        <thead><tr><th>Participant</th><th>Quiz</th><th>Attempt</th><th>Score</th><th>Submitted</th><th></th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ===================== PARTICIPANT ===================== -->
+
+  <section id="partLoginView" style="display:none">
+    <h1>Participant login</h1>
+    <div class="card">
+      <label for="pUser">Username</label>
+      <input type="text" id="pUser">
+      <label for="pPass">Password</label>
+      <input type="password" id="pPass">
+      <p class="lede">Don't know your password? Ask your organizer.</p>
+      <div id="pLoginError" class="error"></div>
+      <button onclick="partLogin()">Log in</button>
+      <button class="link" onclick="showView('roleView')">Back</button>
+    </div>
+  </section>
+
+  <section id="partChangePwView" style="display:none">
+    <h1>Set a new password</h1>
+    <div class="card">
+      <p class="lede">You're using a default password issued by your organizer. Choose your own before continuing.</p>
+      <label for="newPw">New password</label>
+      <input type="password" id="newPw">
+      <div id="changePwError" class="error"></div>
+      <button onclick="partChangePassword()">Set password</button>
+    </div>
+  </section>
+
+  <section id="partListView" style="display:none">
+    <h1>Your quizzes</h1>
+    <p class="lede"><button class="link" onclick="partLogout()">Log out</button></p>
+    <div id="quizList"></div>
+  </section>
+
+  <section id="partQuizView" style="display:none">
+    <h1 id="quizTitle"></h1>
+    <p><span class="timer" id="timerDisplay"></span></p>
+    <div id="questionsContainer"></div>
+    <button onclick="partSubmitQuiz()">Submit answers</button>
+    <div id="submitError" class="error"></div>
+  </section>
+
+  <section id="partResultView" style="display:none">
+    <h1>Result</h1>
+    <div class="card">
+      <p id="resultText"></p>
+      <button onclick="partBackToList()">Back to quizzes</button>
+    </div>
+  </section>
+
+</div>
+<script src="/js/app.js"></script>
+</body>
+</html>
