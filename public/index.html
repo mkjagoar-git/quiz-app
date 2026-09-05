@@ -42,11 +42,11 @@
 
     <h2>Participant accounts</h2>
     <div class="card">
-      <p class="lede">Paste a CSV with a single <code>username</code> column, and choose the password every new account in this batch will start with.</p>
+      <p class="lede">Type each participant's username (e.g. their six-digit ID), one per line, and set the password every new account in this batch will start with.</p>
       <label for="defaultPassword">Default password for this batch</label>
       <input type="text" id="defaultPassword" placeholder="e.g. Exam2026">
-      <label for="participantsCsv">Usernames CSV</label>
-      <textarea id="participantsCsv" placeholder="username&#10;100234&#10;100235"></textarea>
+      <label for="participantUsernames">Participant usernames — one per line</label>
+      <textarea id="participantUsernames" placeholder="100234&#10;100235&#10;100236"></textarea>
       <button onclick="orgUploadParticipants()">Create accounts</button>
       <div id="participantsResult" class="notice"></div>
     </div>
