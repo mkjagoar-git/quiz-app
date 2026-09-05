@@ -1,9 +1,8 @@
 const bcrypt = require('bcryptjs');
-const { parse } = require('csv-parse/sync');
 const { query } = require('./_db');
 const { verifyRole, json } = require('./_auth');
 
-// Expected CSV: header row with a single "username" column.
+// Accepts plain text: one username per line (commas also work as separators). No CSV/header needed.
 exports.handler = async (event) => {
   if (event.httpMethod !== 'POST') return json(405, { error: 'Method not allowed' });
 
@@ -16,27 +15,24 @@ exports.handler = async (event) => {
   } catch (e) {
     return json(400, { error: 'Invalid JSON' });
   }
-  const { csvText, defaultPassword } = body;
-  if (!csvText) return json(400, { error: 'csvText is required' });
+  const { usernames, defaultPassword } = body;
+  if (!usernames) return json(400, { error: 'usernames is required' });
   if (!defaultPassword || defaultPassword.length < 4) {
     return json(400, { error: 'defaultPassword is required (min 4 characters) — this is what every account in this batch starts with' });
   }
 
-  let records;
-  try {
-    records = parse(csvText, { columns: true, skip_empty_lines: true, trim: true });
-  } catch (e) {
-    return json(400, { error: 'Could not parse CSV: ' + e.message });
-  }
+  const usernameList = usernames
+    .split(/[\n,]/)
+    .map((s) => s.trim())
+    .filter(Boolean);
+
+  if (usernameList.length === 0) return json(400, { error: 'No usernames found — type one per line' });
 
   const created = [];
   const skipped = [];
   const hash = await bcrypt.hash(defaultPassword, 10); // same default for the whole batch — set once, reused for every insert below
 
-  for (const row of records) {
-    const username = (row.username || '').trim();
-    if (!username) continue;
-
+  for (const username of usernameList) {
     const { rows: existing } = await query('SELECT id FROM participants WHERE username = $1', [username]);
     if (existing.length > 0) {
       skipped.push(username);
